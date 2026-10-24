@@ -786,7 +786,6 @@ class OllamaWorker(QThread): # Adding the Model
                     })
                     review_response = requests.post(
                         "http://localhost:11434/api/chat",
-                        json={"model": self.model, "messages": messages, "stream": False},
                         json={
                             "model": self.model,
                             "messages": messages,
