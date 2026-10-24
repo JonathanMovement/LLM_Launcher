@@ -129,7 +129,7 @@ class Sidebar(QWidget):
         self.settings_btn.setStyleSheet(f"""
             QPushButton{{
                 background-color: transparent;
-                color: {TEXT_MUTED}'
+                color: {TEXT_MUTED};
                 border: 1px solid {BORDER};
                 border-radius: 6px;
                 padding: 8px 12px;
@@ -575,7 +575,7 @@ class OllamaWorker(QThread): # Adding the Model
                                     "description": "Optional subfolder name to create inside the Desktop, e.g. 'MyProject'"
                                 }
                             },
-                            "required": ["filepath", "content"]
+                            "required": ["filename", "content"]
                         }
                     }
                 },
@@ -846,13 +846,19 @@ class OllamaWorker(QThread): # Adding the Model
         
     def _execute_file_tool(self, fn_name: str, fn_args: dict) -> str:
         desktop = pathlib.Path.home() / "Desktop"
+        onedrive = os.environ.get("OneDrive")
+        if onedrive:
+            onedrive_desktop = pathlib.Path(onedrive) / "Desktop"
+            if onedrive_desktop.exists():
+                desktop = onedrive_desktop
 
         def safe_path(relative: str) -> pathlib.Path:
             p = pathlib.Path(relative)
             # If absolute -> accept only if inside Desktop
             if p.is_absolute():
                 if not str(p.resolve()).startswith(str(desktop.resolve())):
-                    return p, None
+                    return None, "Access denied: path outside Desktop"
+                
             # Resolve a relative path under Desktop, refusing to escape it.
             resolved = (desktop / relative).resolve()
             if not str(resolved).startswith(str(desktop.resolve())):
