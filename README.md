@@ -3,11 +3,11 @@ A local AI chat desktop app for Windows, built with PyQt5 and powered by Ollama.
 
 It ships with 2 models you can switch beween from a dropdown:
 ```bash
-  MODEL    |  BEST FOR
---------------------------------------------
-HERMES3 8b | General conversation, web assisted answers
-Qwen2.5    | Coding help, creating and
-Coder 14b  | editing files on your desktop
+  MODEL    |   BEST FOR
+-------------------------------------------------
+HERMES3 8b |  General conversation, web assisted answers
+Qwen2.5    |  Coding, creating and
+Coder 14b  |  editing files on your desktop
 ```
 
 ## Features
@@ -24,6 +24,10 @@ titled automatically from your first message and filtered by model in the sideba
 - Code self-review -when a reply contains code, the model gets a second pass to check and fix it before it is shown.
 - Per-model context length - adjustable from 4k to 64K tokens in Settings, saved to `settings.json`
 - Markdown code blocks - rendered with preserved indentation
+
+![Quick Launcher look](Launcher_animation.gif)
+![First Look - Hermes](image.png)
+![Qwen](image-1.png)
 
 ## Requirements
 - Windows 10/11
