@@ -1,0 +1,21 @@
+# For class TOPOLOGY (STAR BASED) view the class_topology.svg from Pictures_icons
+
+To run any local models, go to HuggingFace, Ollama or Llama.cpp
+
+To run a model via Ollama, download a model, and run the syntax below:
+
+response = requests.post(
+    "http://localhost:11434/api/chat",
+    json={
+        "model": "hermes3",
+        "messages": [{"role": "user", "content": self.prompt}],
+        "stream": False
+    }
+)
+result = response.json()["message"]["content"]
+self.response_ready.emit(result)
+
+For detailed a detailed Local LLM skeleton, check Skeleton_LLM.py
+
+Installer command for main file:
+pyinstaller --onedir --windowed --icon="Pictures_icons\HERMES_LOGO_ICON.png" --add-data "Pictures_icons;Pictures_icons" --hidden-import ddgs --hidden-import httpx --hidden-import httpx._transports.default --collect-data certifi --name="LLM Launcher" MainLocal_LLM.py
