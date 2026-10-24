@@ -38,7 +38,7 @@ titled automatically from your first message and filtered by model in the sideba
 ## Installation
 1. Clone the repo:
 ```bash
-git clone https://github.com/JonathanMovement/Hermes3_&_Qwen2.5_Workstation.git
+git clone https://github.com/JonathanMovement/LLM_Launcher.git
 cd Hermes3_LLM
 ```
 2. Create and activate a virtual environment:
