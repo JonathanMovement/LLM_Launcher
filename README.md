@@ -73,3 +73,9 @@ The executable is created in `dist/LLM Launcher/`. Ollama and the models still n
 `Python · PyQt5 · Ollama · DuckDuckGo Search (ddgs) · python-docx · openpyxl · PyInstaller`
 
 ## For more info, check `ClassSyntax.txt`
+
+## License
+
+This project is licensed under the GNU General Public License v3.0 License - see [LICENSE](LICENSE) for details.
+
+The Hermes 3 and Qwen logos in `Pictures_icons/` belong to their respective owners and are not covered by this license.
