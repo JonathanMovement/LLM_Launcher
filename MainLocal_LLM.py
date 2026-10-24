@@ -753,6 +753,10 @@ class OllamaWorker(QThread): # Adding the Model
                         "model": self.model,
                         "messages": messages,
                         "stream": False,
+                        "options": {
+                            "num_predict": 2048,
+                            "num_ctx": self.ctx
+                        }
                     },
                     timeout=120
                 )
