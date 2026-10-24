@@ -743,7 +743,8 @@ class OllamaWorker(QThread): # Adding the Model
                         # Send tool result back to Ollama
                     messages.append({
                         "role": "tool",
-                        "content": result_content
+                        "content": result_content,
+                        "tool_name": fn_name
                     })
 
                 # --- Second call: Hermes now has the search results ---
@@ -786,6 +787,15 @@ class OllamaWorker(QThread): # Adding the Model
                     review_response = requests.post(
                         "http://localhost:11434/api/chat",
                         json={"model": self.model, "messages": messages, "stream": False},
+                        json={
+                            "model": self.model,
+                            "messages": messages,
+                            "stream": False,
+                            "options": {
+                                "num_predict": 2048,
+                                "num_ctx": self.ctx
+                            }
+                        },
                         timeout=120
                     )
                     result = review_response.json()["message"]["content"]
