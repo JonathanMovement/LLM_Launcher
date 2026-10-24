@@ -448,6 +448,20 @@ class OllamaWorker(QThread): # Adding the Model
         self.model = model
         self.ctx = ctx
 
+    def wants_file_action(self) -> bool:
+        # Look only at the latest user message for explicit file intent
+        last_user_msg = ""
+        for m in reversed(self.messages):
+            if m["role"] == "user":
+                last_user_msg = m["content"].lower()
+                break
+
+        keywords = ["save", "desktop", "file", "folder", "delete"]
+        for kw in keywords:
+            if kw in last_user_msg:
+                return True
+        return False
+
     def run(self):
         try:
             import requests
@@ -516,7 +530,8 @@ class OllamaWorker(QThread): # Adding the Model
                     "role": "system",
                     "content": (
                         f"The user has web search enabled. Here are real-time search results "
-                        f"retrieved for their query. Use them to answer accurately:\n\n{search_result}"   
+                        f"retrieved for their query. The search is already done - do not call any "
+                        f"search tool, answer directly from these results:\n\n{search_result}"   
                     )
                 })
             # --- Tool definition Ollama will know about ---
@@ -630,9 +645,11 @@ class OllamaWorker(QThread): # Adding the Model
                         }
                     }
                 }
-            ] if self.model != "hermes3" else []
+            ]
+            if self.model == "hermes3" or not self.wants_file_action():
+                file_tools = []
 
-            if self.model != "hermes3":
+            if file_tools:
                 messages.insert(0, {
                     "role": "system",
                     "content": (
@@ -645,8 +662,6 @@ class OllamaWorker(QThread): # Adding the Model
                         "If the user asks you to 'write code', 'show me code', 'give me a script', or similar — "
                         "respond normally with the code in your message. Do NOT create a file unless they say "
                         "'save it', 'put it on my desktop', 'create a file', or similar explicit file intent.\n\n"
-                        "When you DO need to create a file, respond ONLY with a JSON tool call:\n"
-                        "{ \"name\": \"tool_name\", \"arguments\": { ... } }\n\n"
                         "Do NOT write Python code to do file operations — use the tools directly."
                     )
                 })
@@ -664,6 +679,10 @@ class OllamaWorker(QThread): # Adding the Model
             all_tools = tools + file_tools
             if all_tools:
                 payload["tools"] = all_tools
+
+            offered_names = []
+            for t in all_tools:
+                offered_names.append(t["function"]["name"])
 
             response = requests.post(
                 "http://localhost:11434/api/chat",
@@ -695,9 +714,9 @@ class OllamaWorker(QThread): # Adding the Model
                         parsed = json.loads(block.strip())
                         if isinstance(parsed, list):
                             for item in parsed:
-                                if isinstance(item, dict) and "name" in item:
+                                if isinstance(item, dict) and item.get("name") in offered_names:
                                     tool_calls.append({"function": {"name": item["name"], "arguments": item.get("arguments", {})}})
-                        elif isinstance(parsed, dict) and "name" in parsed:
+                        elif isinstance(parsed, dict) and parsed.get("name") in offered_names:
                             tool_calls.append({"function": {"name": parsed["name"], "arguments": parsed.get("arguments", {})}})
                     except json.JSONDecodeError:
                         pass
